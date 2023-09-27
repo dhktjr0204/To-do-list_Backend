@@ -3,10 +3,8 @@ package com.study.toDoList.repository;
 import com.study.toDoList.domain.Content;
 import com.study.toDoList.domain.Schedule;
 import com.study.toDoList.domain.User;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.assertj.core.api.ListAssert;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -46,14 +44,34 @@ class ContentRepositoryTest {
         userRepository.delete(user);
     }
     @Test
+    @DisplayName("저장 후 스케줄이 잘 뽑아지는 지 확인")
     public void testFindByScheduleId(){
         //given
         User user = userRepository.findByEmail("test@gmail.com").orElseThrow(() -> new IllegalArgumentException());
         List<Schedule> schedules = scheduleRepository.findByUserId(user.getId());
-        //when
         List<Content> contents = contentRepository.findByScheduleId(schedules.get(0).getId());
-        //then
+        //when, then
         assertThat(contents).hasSize(1);
+        assertThat(schedules).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("status 업데이트")
+    public void testUpdate(){
+        //given
+        User user = userRepository.findByEmail("test@gmail.com").orElseThrow(() -> new IllegalArgumentException());
+        List<Schedule> schedules = scheduleRepository.findByUserId(user.getId());
+        List<Content> contents = contentRepository.findByScheduleId(schedules.get(0).getId());
+        //when
+        for (Content content : contents) {
+            content.update('Y');
+        }
+        for (Schedule schedule : schedules) {
+            schedule.update('Y');
+        }
+        //then
+        assertThat(schedules.get(0).getComplete()).isEqualTo('Y');
+        assertThat(contents.get(0).getStatus()).isEqualTo('Y');
     }
 
 }

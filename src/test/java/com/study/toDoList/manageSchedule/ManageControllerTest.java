@@ -1,8 +1,9 @@
 package com.study.toDoList.manageSchedule;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.toDoList.domain.Content;
 import com.study.toDoList.manageSchedule.dto.CreateRequestDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,11 @@ class ManageControllerTest {
     @MockBean
     private ManageService manageService;
 
+
     @Test
     @DisplayName("스케줄 등록 성공")
     public void createScheduleTest() throws Exception{
+        //given
         List<String> content= Arrays.asList("테스트1","테스트2");
         CreateRequestDto dto = CreateRequestDto.builder()
                 .email("dhktjr0204@naver.com")
@@ -45,17 +48,13 @@ class ManageControllerTest {
                 .day("")
                 .closingDate("").build();
 
-        String json = new Gson().toJson(dto);
-        System.out.println(json);
-
-        //    contentType : 요청과 응답 모두 보낼 데이터의 형식을 알려주는 헤더
-        //    accept : 클라이언트에서 서버로 요청시 요청메세지에 담기는 헤더
+        //when, then
         mockMvc.perform(post("/api/create")
-                        .content(json)
+                        .content(new ObjectMapper().writeValueAsString(dto))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8"))
-                .andExpect(status().isOk()).andDo(print());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
     //스프링 시큐리티 아예 비활성화하는 설정
     @Configuration
