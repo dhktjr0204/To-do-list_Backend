@@ -5,6 +5,7 @@ import com.study.toDoList.domain.ScheduleInterface;
 import com.study.toDoList.domain.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -54,13 +55,20 @@ class ScheduleRepositoryTest {
     }
 
     @Test
+    @DisplayName("마감기한 임박인 스케줄 출력하기")
     public void testFindByDeadLine(){
         //given
         User user = userRepository.findByEmail("test@gmail.com").orElseThrow(() -> new IllegalArgumentException());
-        //when
+        List<Schedule> schedules = scheduleRepository.findByUserId(user.getId());
         List<ScheduleInterface> byDeadLine = scheduleRepository.findByDeadLine(user.getId());
-        //then
+        Long test_id=9999L;
+        for (Schedule schedule : schedules) {
+            if (schedule.getClosingDate().equals(LocalDate.now())){
+                test_id=schedule.getId();
+            }
+        }
+        //when,then
         assertThat(byDeadLine).hasSize(1);
+        assertThat(byDeadLine.get(0).getId()).isEqualTo(test_id);
     }
-
 }
