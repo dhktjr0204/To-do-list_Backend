@@ -1,5 +1,6 @@
 package com.study.toDoList.config.jwt;
 
+import com.study.toDoList.config.dto.UserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -19,6 +20,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+import java.util.List;
+
 
 @Slf4j
 @Component
@@ -42,6 +45,12 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
+    }
+
+    public static Authentication createAuthentication(com.study.toDoList.domain.User user) {
+        List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(user.getRoleKey()));
+        UserPrincipal principal = UserPrincipal.from(user);
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
     public Authentication getAuthentication(String accessToken) {

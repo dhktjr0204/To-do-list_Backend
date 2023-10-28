@@ -1,6 +1,7 @@
 package com.study.toDoList.schedule;
 
 import com.study.toDoList.Login.AuthService;
+import com.study.toDoList.config.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ class ScheduleControllerTest {
     private AuthService authService;
     @MockBean
     private ScheduleService scheduleService;
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("해당 유저의 등록된 스케줄들 찾기")
